@@ -38,8 +38,9 @@ test.describe('Form validation', () => {
     });
   }
 
+  // titles avoid a literal "@" because Playwright reads "@word" in a title as a tag
   for (const bad of ['not-an-email', 'qa@', '@qa-test.co.th', 'qa@qa-test']) {
-    test(`TC-VAL-03 invalid email format "${bad}" is rejected`, async ({ registerPage, user }) => {
+    test(`TC-VAL-03 invalid email format "${bad.replace('@', '(at)')}" is rejected`, async ({ registerPage, user }) => {
       await registerPage.fill({ ...user, email: bad });
       await registerPage.submit();
       await expect(registerPage.error(MSG.invalidEmail)).toBeVisible();

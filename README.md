@@ -79,8 +79,14 @@ empeo-registration-tests/
 
 ## Test results
 
-Last full run on Windows 11, Chromium 1.64, against UAT: see `docs/` screenshots of the HTML report.
-<!-- update after the final run: X passed / Y failed, duration -->
+Run on 27 Oct 2026, Windows 11, Playwright 1.64.1 / Chromium, against UAT:
+
+| Run | Result | Duration |
+|---|---|---|
+| `npx playwright test` (4 workers) | **35 passed, 0 failed** | 2.2 min |
+| `npm run test:video` (video + trace for every test) | see `docs/demo/` | – |
+
+Screenshots of the HTML report: `docs/report/`. Recorded run: `docs/demo/automation-run.mp4`.
 
 ## Findings (observed on UAT, 27 Oct 2026)
 
