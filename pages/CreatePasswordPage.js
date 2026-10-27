@@ -14,8 +14,8 @@ class CreatePasswordPage {
   }
 
   async expectOpen() {
-    await expect(this.page).toHaveURL(/\/Register\/empeo\/create-password\?token=/);
-    await expect(this.title).toBeVisible();
+    await expect(this.title).toBeVisible({ timeout: 30_000 }); // UAT is slow under load
+    await expect(this.page).toHaveURL(/\/Register\/empeo\/create-password\?token=/, { timeout: 30_000 });
   }
 
   async setPassword(password, confirm = password) {

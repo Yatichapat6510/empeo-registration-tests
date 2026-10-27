@@ -29,8 +29,11 @@ class RegisterPage {
   }
 
   async selectOption(dropdown, option) {
-    await dropdown.click();
-    await this.dropdownItems.getByText(option, { exact: true }).click();
+    const item = this.dropdownItems.getByText(option, { exact: true });
+    await expect(async () => {
+      if (!(await item.isVisible())) await dropdown.click();
+      await item.click({ timeout: 3_000 });
+    }).toPass({ timeout: 20_000 });
   }
 
   /** Fill the form. Any field left undefined in `data` is skipped. */
@@ -47,7 +50,15 @@ class RegisterPage {
     if (data.lastName !== undefined) await this.lastName.fill(data.lastName);
     if (data.phone !== undefined) await this.phone.fill(data.phone);
     if (data.promoCode) await this.applyPromo(data.promoCode);
-    if (data.acceptTerms) await this.terms.check({ force: true }); // custom-styled checkbox
+    if (data.acceptTerms) await this.acceptTerms();
+  }
+
+  /** Custom-styled checkbox: a click right after the form re-renders can be swallowed, so retry until checked. */
+  async acceptTerms() {
+    await expect(async () => {
+      if (!(await this.terms.isChecked())) await this.terms.click({ force: true });
+      await expect(this.terms).toBeChecked({ timeout: 1_000 });
+    }).toPass({ timeout: 15_000 });
   }
 
   async applyPromo(code) {

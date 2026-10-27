@@ -16,7 +16,7 @@ git clone <this-repo-url>
 cd empeo-registration-tests
 npm ci
 npx playwright install chromium
-npx playwright test            # run everything (headless, 3 workers)
+npx playwright test            # run everything (headless, 2 workers, 1 retry)
 npx playwright show-report     # open the HTML report
 ```
 
@@ -79,12 +79,20 @@ empeo-registration-tests/
 
 ## Test results
 
-Run on 27 Oct 2026, Windows 11, Playwright 1.64.1 / Chromium, against UAT:
+Runs on 27 Oct 2026, Windows 11, Playwright 1.64.1 / Chromium, against UAT:
 
-| Run | Result | Duration |
-|---|---|---|
-| `npx playwright test` (4 workers) | **35 passed, 0 failed** | 2.2 min |
-| `npm run test:video` (video + trace for every test) | see `docs/demo/` | – |
+| Time | Run | Result | Duration |
+|---|---|---|---|
+| 15:59 | `npx playwright test` (4 workers, first version) | 35 passed, 0 failed | 2.2 min |
+| 16:08 | `npm run test:video` (video + trace for every test) | 35 passed, 0 failed | 4.0 min |
+| 16:47 | `npx playwright test` (my run) | **33 passed, 2 failed** – TC-OTP-01, TC-OTP-03 | – |
+| 17:13 | `npx playwright test` (2 workers, 1 retry, after the fix below) | **35 passed, 0 failed, 0 flaky** | 3.0 min |
+
+**What failed at 16:47 and why:** after a correct OTP, UAT took more than 10 s to open the set-password page, so the
+10 s assertion timed out; the failure screenshot shows the page did open afterwards (`docs/report/03-local-run-1647-otp01-failed.jpg`).
+It is a UAT timing issue, not a wrong expectation. Fix: wait up to 30 s for that page, retry dropdown/checkbox clicks until
+they take effect, 2 workers and 1 retry against the shared UAT. A retried test that then passes is reported as **flaky**, not hidden.
+An auto fixture attaches HTTP ≥ 400 responses and any error popup to a failed test, to tell a script problem from a UAT problem.
 
 Screenshots of the HTML report: `docs/report/`. Recorded run: `docs/demo/automation-run.mp4`.
 
@@ -97,6 +105,7 @@ Screenshots of the HTML report: `docs/report/`. Recorded run: `docs/demo/automat
 | F-03 | Phone field accepts `-` and up to 15 characters; validation only shows "รูปแบบเบอร์โทรศัพท์ไม่ถูกต้อง" on submit. | Low | TC-EDGE-02/03 |
 | F-04 | FREE15DAY is a **multi-use** code (usageCount > 3,000, isLock=false). A "reused promo code is rejected" rule can't be tested with it; a single-use code is needed. | Info | TC-PRM-04 |
 | F-05 | The same phone (0967690708) can register many companies; no duplicate-phone block on UAT. | Info (confirm with PO) | TC-REG-01 |
+| F-07 | After a correct OTP the redirect to the set-password page sometimes takes > 10 s (2 of 35 in the 16:47 run). | Low (performance, UAT) | TC-OTP-01/03 |
 | F-06 | Wrong OTP: API returns HTTP 200 with business code 4001/E4001 (error in body, not HTTP status). | Info | TC-OTP-02 |
 
 ## Assumptions

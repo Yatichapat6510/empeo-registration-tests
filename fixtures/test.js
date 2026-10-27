@@ -9,6 +9,17 @@ const { newRegistration } = require('../data/testData');
  * `registerPage` is already opened on /Register/empeo.
  */
 const test = base.test.extend({
+  // Evidence to tell a script problem from a UAT problem: HTTP >= 400 responses and the swal "Oops" popup text.
+  _diagnostics: [async ({ page }, use, testInfo) => {
+    const bad = [];
+    page.on('response', r => { if (r.status() >= 400) bad.push(`${r.status()} ${r.request().method()} ${r.url()}`); });
+    await use();
+    if (testInfo.status !== testInfo.expectedStatus) {
+      const popup = await page.locator('.swal2-container').innerText().catch(() => '');
+      const lines = [`swal popup: ${popup || '(none)'}`, ...(bad.length ? bad : ['(no HTTP errors)'])];
+      await testInfo.attach('uat-errors.txt', { body: lines.join('\n') });
+    }
+  }, { auto: true }],
   registerPage: async ({ page }, use) => {
     const rp = new RegisterPage(page);
     await rp.open();

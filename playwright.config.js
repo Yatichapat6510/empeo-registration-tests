@@ -8,8 +8,8 @@ module.exports = defineConfig({
   expect: { timeout: 10_000 },
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 1 : 0,
-  workers: process.env.CI ? 2 : 3,
+  retries: 1, // UAT is shared and occasionally slow; a retry that passes is reported as flaky, not hidden
+  workers: 2,
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL: process.env.BASE_URL || 'https://portal.uat.gofive.co.th',
