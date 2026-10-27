@@ -1,5 +1,7 @@
 # empeo Registration – Automation Tests
 
+[![Playwright Tests](https://github.com/Yatichapat6510/empeo-registration-tests/actions/workflows/playwright.yml/badge.svg)](https://github.com/Yatichapat6510/empeo-registration-tests/actions/workflows/playwright.yml)
+
 Automated tests for the **empeo free-trial registration** flow on Gofive UAT
 (https://portal.uat.gofive.co.th/Register/empeo), written with **Playwright Test (JavaScript)**.
 
@@ -35,7 +37,8 @@ Windows PowerShell: if `npm`/`npx` is blocked by the execution policy, use `npm.
 Optional `.env` (copy from `.env.example`): `BASE_URL`, `TEST_PHONE`, `TEST_OTP`, `PROMO_CODE`, `TEST_TIMEOUT`.
 Defaults are the values from the brief, so no `.env` is needed.
 
-CI: `.github/workflows/playwright.yml` runs the suite on every push / pull request and uploads the HTML report.
+CI: `.github/workflows/playwright.yml` (GitHub Actions) runs the suite on every push / pull request / manual run and uploads the HTML report as an artifact. Status badge at the top; runs: [Actions tab](https://github.com/Yatichapat6510/empeo-registration-tests/actions).
+The authoritative result is the local run in *Test results* below (35/35, 17:13). A GitHub-hosted runner is a different network from my PC, so UAT may respond slower or block it; if a CI run is red, check the report artifact before assuming a script problem.
 
 ## Project structure
 
